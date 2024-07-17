@@ -22,3 +22,5 @@ This website features include -
 13. Also user can change login password from settings.
 14. Its mobile responsive with modern design + fade in animation on pages.
 And much more.
+
+so I want to complete 30 hours of all the videos and i hope i complete it 
