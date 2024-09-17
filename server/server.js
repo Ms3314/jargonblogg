@@ -4,9 +4,11 @@ import 'dotenv/config'
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import { nanoid } from "nanoid";
-
+import cors from "cors"
 // schema imported here
 import User from "./Schema/User.js"
+
+
 
 
 
@@ -16,7 +18,10 @@ let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for pass
 let PORT = 3000;
 
 
-
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true
+}));
 mongoose.connect(process.env.DB_LOCATION)
 .then(() => {
     console.log("Connected to database")
@@ -24,6 +29,7 @@ mongoose.connect(process.env.DB_LOCATION)
 // IF its saying that we cannot send a callback in the connect stmt then i just use a then statemnt 
 
 app.use(express.json());
+
 
 app.get("/" , (req ,res) => {
 
@@ -54,6 +60,7 @@ const formatDatatoSend = (user) => {
 app.post("/signup" , (req ,res) => {
     const {fullname , email , password} = req.body
     console.log(req.body)
+    console.log("data  reach till here ")
     // validating the data from frontend 
     if(fullname.length < 3){
         return res.status(403).json({"error" : "Fullname must be at least 3 characters long"})
