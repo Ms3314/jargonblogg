@@ -1,9 +1,25 @@
 import logo from '../imgs/logo.png'
 import { Link , Outlet} from 'react-router-dom'
-import { useState } from 'react'
+import { useState , useContext} from 'react'
+import { UserContext } from '../App'
+import UserNavigationPanel from '../components/user-navigation.component'
 import "../index.css"
+
 const Navbar = () => {
     const [open , setOpen] = useState(false)
+    const [userNavOpen , setUserNavOpen] = useState(false)
+    let {userAuth , userAuth : {access_token , profile_img }} = useContext(UserContext);
+
+    const handleBlurPanel = () => {
+        setTimeout(() => {
+            setUserNavOpen(false)
+        }, 100);
+    }
+
+    const handleUserNavPanel = () => {
+        setUserNavOpen(!userNavOpen)
+    }
+
     function handleOpen(){
         console.log(open)
         setOpen(!open)
@@ -33,13 +49,38 @@ const Navbar = () => {
                     <i className="fi fi-sr-file-edit"></i>                
                 </Link>
 
-               <Link className='btn-dark py-2' to="/signin">
-                    <p>Sign In </p>
-                </Link>
+                {
+                    access_token ? 
+                    <>
+                        <Link to="/dashboard/notification" >
+                            <button className='w-12 h-12 rounded-full bg-grey relative hover:bg-black/10'>
+                                <i className="fi fi-rs-bell text-xl text-dark-grey block mt-1"></i>
+                            </button>
+                        </Link>
 
-                <Link className='btn-light py-2 hidden md:block' to="/signup">
-                    <p>Sign Up</p>
-                </Link>
+                        <div className='relative' onClick={handleUserNavPanel} onBlur={handleBlurPanel}>
+                            <button className='w-12 h-12 mt-1'> 
+                                <img src={profile_img} alt="profile image " className='w-full h-full rounded-full object-cover'/>
+                            </button>
+
+                            {
+                               userNavOpen ? <UserNavigationPanel/> : ""
+                            }
+                        </div>
+                    </>
+                    :
+                    <>
+                    <Link className='btn-dark py-2' to="/signin">
+                        <p>Sign In </p>
+                    </Link>
+
+                    <Link className='btn-light py-2 hidden md:block' to="/signup">
+                        <p>Sign Up</p>
+                     </Link>
+                    </>
+                }
+
+               
             </div>
         </nav>
         <Outlet />
