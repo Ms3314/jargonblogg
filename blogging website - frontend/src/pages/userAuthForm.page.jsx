@@ -7,6 +7,7 @@ import { toast, Toaster } from 'react-hot-toast';
 import axios from 'axios';
 import { storeinSession } from '../common/session';
 import {UserContext} from '../App';
+import { authWithGoogle } from '../common/firebase';
 
 
 let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
@@ -19,6 +20,21 @@ function UserAuthForm({ type }) {
     // console.log(useContext(UserContext))
     console.log(access_token)
     // Async/Await for better error handling
+
+    const handleGoogleAuth = (e) => {
+        e.preventDefault();
+        authWithGoogle().then(user => {
+            let serverRoute = "/google-auth"
+            let formData = {
+                access_token : user.accessToken
+            }
+            userAuthThroughServer(serverRoute , formData)
+        }).catch(error => {
+            toast.error("trouble logging with google ")
+            return console.log(error)
+        })
+    }
+
     const userAuthThroughServer = async (serverRoute, formData) => {
         try {
             const response = await axios.post(import.meta.env.VITE_SERVER_DOMAIN + serverRoute, formData, {
@@ -127,7 +143,9 @@ function UserAuthForm({ type }) {
                         <p>or</p>
                         <hr className="w-1/2 border-black" />
                     </div>
-                    <button className="btn-dark flex items-center gap-4 justify-center w-[90%] center">
+                    <button
+                    onClick={handleGoogleAuth}
+                    className="btn-dark flex items-center gap-4 justify-center w-[90%] center">
                         <img src={googleimg} className="w-5" alt="" />
                         Continue with Google
                     </button>

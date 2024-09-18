@@ -7,9 +7,9 @@ import { nanoid } from "nanoid";
 import cors from "cors"
 // schema imported here
 import User from "./Schema/User.js"
-
-
-
+import admin from "firebase-admin";
+import serviceAccountKey from './jargon-blog-firebase-adminsdk-j8izb-43dd6bbe56.json' assert {type : "json" }
+import {getAuth} from "firebase-admin/auth"
 
 
 const app = express()
@@ -17,6 +17,9 @@ let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for e
 let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
 let PORT = 3000;
 
+admin.initializeApp({
+    credential : admin.credential.cert(serviceAccountKey)
+})
 
 app.use(cors({
     origin: 'http://localhost:5173',
@@ -103,15 +106,18 @@ app.post("/signin" , (req , res) => {
         if (!user) {
             return res.status(403).json({"error" : "Invalid credentials"})
         }
-        console.log(user)
-        bcrypt.compare(password , user.personal_info.password , (err , result) => {
-            if(err) {
-                return res.status(403).json({"error" : "Invalid credentials"})
-            }else {
-                return res.status(200).json(formatDatatoSend(user))
-            }
-        })
 
+        if (user.google_auth) {
+             res.status(403).json({"error" : "Account was looged in with google try logging in with it "})
+        }else {
+            bcrypt.compare(password , user.personal_info.password , (err , result) => {
+                if(err) {
+                    return res.status(403).json({"error" : "Invalid credentials"})
+                }else {
+                    return res.status(200).json(formatDatatoSend(user))
+                }
+            })
+        }
         // return res.json({"status" : "got user Document "})
     }).
     catch(err=> {
@@ -120,6 +126,48 @@ app.post("/signin" , (req , res) => {
     })
 } )
 
+app.post("/google-auth" , async (req , res) => {
+    let {access_token} = req.body  
+    getAuth().verifyIdToken(access_token)
+    .then(async (decodedUser)=> {
+        let {email , name , picture} = decodedUser
+        picture = picture.replace("s96-c" , "s384-c")
+
+        let user = await User.findOne({"personal_info.email" : email})
+            .select("personal_info.fullname personal_info.username personal_info.profile_img google_auth ").then((user) => {
+                return user || null 
+        })
+        .catch(err => {
+            res.status(500).json({"error" : err.message})
+        })
+            if (user) { //checking if the user already exists 
+                if(!user.google_auth) { // if not from the gAuth tell them to sign using the email and the password 
+                    return res.status(403).json({"error" : "this email was signed up with google , please login with password to access the accound "})
+                }
+            }
+            else {
+                let username = await generateUsername(email)
+                // if does not exists create a new db for it 
+                user = new User({
+                    personal_info : {fullname : name , email , username  },
+                    google_auth : true
+                })
+
+                await user.save().then((data)=>{
+                    user = data 
+                    console.log(user)
+                })
+                .catch(err => {
+                    return res.status(500).json({"error" : err.message})
+                })
+            }
+            return res.status(200).json(formatDatatoSend(user))
+
+    })
+    .catch(err => {
+        return res.status(500).json({"error" : err.message})
+    })
+})
               
 app.listen(PORT , () => {
     console.log("Server is running on port " + PORT)
