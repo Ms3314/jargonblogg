@@ -8,7 +8,7 @@ import cors from "cors"
 // schema imported here
 import User from "./Schema/User.js"
 import admin from "firebase-admin";
-import serviceAccountKey from './jargon-blog-firebase-adminsdk-j8izb-43dd6bbe56.json' assert {type : "json" }
+import serviceAccountKey from './jargon-blog-firebase-adminsdk-j8izb-43dd6bbe561.json' assert {type : "json" }
 import {getAuth} from "firebase-admin/auth"
 
 
