@@ -1,0 +1,9 @@
+# Ignore env file
+.env
+
+.json
+
+.rest
+
+node_modules/
+
