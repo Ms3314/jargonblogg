@@ -10,7 +10,7 @@ import User from "./Schema/User.js"
 import admin from "firebase-admin";
 import serviceAccountKey from './jargon-blog-firebase-adminsdk-j8izb-43dd6bbe561.json' assert {type : "json" }
 import {getAuth} from "firebase-admin/auth"
-
+import aws from "aws-sdk";
 
 const app = express()
 let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
@@ -25,10 +25,30 @@ app.use(cors({
     origin: 'http://localhost:5173',
     credentials: true
 }));
+
 mongoose.connect(process.env.DB_LOCATION)
 .then(() => {
     console.log("Connected to database")
 })
+
+// setting up the s3 bucket 
+const s3 = new aws.S3({
+    region : 'eu-north-1',
+    accessKeyId : process.env.AWS_ACCESS_KEY,
+    secretAccessKey : process.env.AWS_SECRET_ACCESS_KEY
+})
+
+const generateUploadURL = async () => {
+    const date = new Date()
+    const imageName = `${nanoid()}-${date.getTime}.jpeg`
+    return await s3.getSignedUrlPromise('putObject' , {
+        Bucket : 'myjargonbucket',
+        Key : imageName,
+        Expires : 1000,
+        ContentType : 'image/jpeg'
+    })
+}
+
 // IF its saying that we cannot send a callback in the connect stmt then i just use a then statemnt 
 
 app.use(express.json());
@@ -59,6 +79,14 @@ const formatDatatoSend = (user) => {
         username : user.personal_info.username,
     }
 }
+
+app.get('/get-upload-url' , (req , res) => {
+        generateUploadURL().then(url => res.status(200).json({"uploadURL" : url}))
+        .catch(err => {
+        console.log(err.message)
+        return res.status(500).json({"error" : "Something went wrong"})
+    })
+})
 
 app.post("/signup" , (req ,res) => {
     const {fullname , email , password} = req.body
