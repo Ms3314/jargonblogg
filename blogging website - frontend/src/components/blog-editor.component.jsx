@@ -23,8 +23,16 @@ const BlogEditor = () => {
         </nav>
         <AnimationWraper>
             <section>
-                <div className="mx-auto max-w-[900px]">
-
+                <div className="mx-auto max-w-[900px] w-full ">
+                    <div className="relative aspect-video hover:opacity-80 bg-white border-4 border-grey"> 
+                        <label htmlFor="uploadBanner">
+                            <input id="uploadBanner"
+                            type="file"
+                            accept=".png , .jpg , .jpeg"
+                            hidden
+                            />
+                        </label>
+                    </div>
                 </div>
             </section>
         </AnimationWraper>
