@@ -12,16 +12,16 @@ import {tools} from "./tools.component"
 
 const BlogEditor = () => {
 
-    let {blog , blog : {title , banner , content , tags , des} , setBlog  } =  useContext(EditorContext)
+    let {blog , blog : {title , banner , content , tags , des} , setEditorState , setBlog , textEditor , setTextEditor } =  useContext(EditorContext)
 
     // useEffect 
     useEffect(()=> {
-        let editor = new EditorJS({
+        setTextEditor(new EditorJS({
             holderId : "textEditor",
             data : '',
             tools : tools,
             placeholder : "lets write an awesome story"
-        })
+        }))
     },[])
 
     const handleBannerUpload = (e) => {
@@ -57,6 +57,27 @@ const BlogEditor = () => {
          const img = e.target
         img.src = defaultBanner
     }
+    const handlePublishEvent = (e) => {
+        if (!banner.length) {
+            return toast.error("Upload a blog banner to publish it")
+        }
+        if (!title.length) {
+            return toast.error("Write blog title for the blog")
+        }
+        if (textEditor.isReady) {
+            textEditor.save().then(data => {
+                if(data.blocks.length) {
+                    setBlog({...blog , content : data});
+                    setEditorState("publish")
+                } else {
+                    return toast.error("Write something in the blog to publish it ")
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+        }
+    }
     return (
         <>
         <nav className="navbar">
@@ -67,7 +88,9 @@ const BlogEditor = () => {
                 {title.length ? title : "New Blog" }                              
             </p> 
             <div className="flex gap-4 ml-auto">
-                <button className="btn-dark py-2">
+                <button className="btn-dark py-2"
+                onClick = {handlePublishEvent}
+                >
                     Publish
                 </button>
                 <button className="w-[100px] btn-light py-2 px-[10px]">
