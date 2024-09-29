@@ -9,19 +9,28 @@ import {Toaster , toast} from "react-hot-toast"
 import {EditorContext} from "../pages/editor.pages"
 import EditorJS from "@editorjs/editorjs"
 import {tools} from "./tools.component"
+import {UserContext} from "../App"
+import {useNavigate} from "react-router-dom"
+import axios from "axios"
 
 const BlogEditor = () => {
 
     let {blog , blog : {title , banner , content , tags , des} , setEditorState , setBlog , textEditor , setTextEditor } =  useContext(EditorContext)
 
+    let {userAuth : { access_token }} = useContext(UserContext)
+    let navigate = useNavigate()
+
     // useEffect 
     useEffect(()=> {
+        // so basically want it to create a text editor only once , so normally it is false so we run this but when it converts into true an extra editor will not be created 
+        if (!textEditor.isReady) {
         setTextEditor(new EditorJS({
             holderId : "textEditor",
             data : content ,
             tools : tools,
             placeholder : "lets write an awesome story"
         }))
+    }
     },[])
 
     const handleBannerUpload = (e) => {
@@ -58,26 +67,63 @@ const BlogEditor = () => {
         img.src = defaultBanner
     }
     const handlePublishEvent = (e) => {
-        // if (!banner.length) {
-        //     return toast.error("Upload a blog banner to publish it")
-        // }
-        // if (!title.length) {
-        //     return toast.error("Write blog title for the blog")
-        // }
-        // if (textEditor.isReady) {
+        if (!banner.length) {
+            return toast.error("Upload a blog banner to publish it")
+        }
+        if (!title.length) {
+            return toast.error("Write blog title for the blog")
+        }
+        if (textEditor.isReady) {
             textEditor.save().then(data => {
-                // if(data.blocks.length) {
+                if(data.blocks.length) {
                     setBlog({...blog , content : data});
                     setEditorState("publish")
-                // } else {
-                //     return toast.error("Write something in the blog to publish it ")
-                // }
+                } else {
+                    return toast.error("Write something in the blog to publish it ")
+                }
             })
             .catch((err) => {
                 console.log(err)
             })
         }
-    // }
+    }
+    const handleSaveDraft = (e) => {
+        if (e.target.className.includes("diable")){
+            return 
+        } 
+        if(!title.length) {
+            return toast.error("Write blog title saving it as a draft")
+        }
+        let loadingToast = toast.loading("Saving Draft....") 
+        e.target.classList.add('disable') 
+        if (textEditor.isReady) {
+            textEditor.save().then(content => {
+                let blogObj = {
+                    title , banner , des , content , tags , draft : true 
+                }     
+                axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/create-blog" , blogObj , {
+                    headers : {
+                        'Authorization' :  `Bearer ${access_token}`
+                    }
+                } )
+                .then(()=> {
+                    e.target.classList.remove('disable')
+                    toast.dismiss(loadingToast)
+                    toast.success("Saved Draft :> \_")
+        
+                    setTimeout(()=> {
+                        navigate("/")
+                    },500);
+                })
+                .catch(({response}) => {
+                    e.target.classList.remove('disable')
+                    toast.dismiss(loadingToast)
+                    return toast.error(response.toast.error)
+                })
+            })
+        }
+       
+    }
     return (
         <>
         <nav className="navbar">
@@ -93,7 +139,7 @@ const BlogEditor = () => {
                 >
                     Publish
                 </button>
-                <button className="w-[100px] btn-light py-2 px-[10px]">
+                <button className="w-[100px] btn-light py-2 px-[10px]" onClick={handleSaveDraft}>
                     Save Draft
                 </button>
             </div>

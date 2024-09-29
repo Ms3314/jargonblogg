@@ -223,18 +223,24 @@ app.post("/create-blog" , verifyJWT ,(req , res) => {
     if(!title.length) {
         return res.status(403).json({error : "you must provide a title to publish your blog "})
     } 
-    if (!des.length || des.length > 200) {
-        return res.status(403).json({error : "You must provide blog description under 200 characters "})
+
+    if(!draft) {
+        if (!des.length || des.length > 200) {
+            return res.status(403).json({error : "You must provide blog description under 200 characters "})
+        }
+        if (!banner.length) {
+            return res.status(403).json({error : "You must provide a blog banner to publish it"})
+        }
+        if(!content.blocks.length) {
+            return res.json(403).json({error : "There must be some content to publish it "})
+        }
+        if (!tags.length || tags.length > 10) {
+            return res.json(403).json({error : "Provide tags in order to publish the blog , Maximum 10 "})
+        }
     }
-    if (!banner.length) {
-        return res.status(403).json({error : "You must provide a blog banner to publish it"})
-    }
-    if(!content.blocks.length) {
-        return res.json(403).json({error : "There must be some content to publish it "})
-    }
-    if (!tags.length || tags.length > 10) {
-        return res.json(403).json({error : "Provide tags in order to publish the blog , Maximum 10 "})
-    }
+
+    
+   
     tags  = tags.map(tag => tag.toLowerCase());
 
     let blog_id = title.replace(/[^a-zA-Z0-9]/g, ' ').replace(/\s+/g , "-").trim() + nanoid()
