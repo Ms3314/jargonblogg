@@ -20,7 +20,7 @@ const BlogEditor = () => {
     let {userAuth : { access_token }} = useContext(UserContext)
     let navigate = useNavigate()
 
-    // useEffect 
+    // useEffect to create a new editor or not 
     useEffect(()=> {
         // so basically want it to create a text editor only once , so normally it is false so we run this but when it converts into true an extra editor will not be created 
         if (!textEditor.isReady) {
@@ -66,6 +66,7 @@ const BlogEditor = () => {
          const img = e.target
         img.src = defaultBanner
     }
+    // when u click on Publish this function gets called 
     const handlePublishEvent = (e) => {
         if (!banner.length) {
             return toast.error("Upload a blog banner to publish it")
@@ -73,7 +74,9 @@ const BlogEditor = () => {
         if (!title.length) {
             return toast.error("Write blog title for the blog")
         }
+        // u cant directly like publish it , first checks if the editor i ready or not 
         if (textEditor.isReady) {
+            // this then saves the data of the text editor and then update the state to add the data inside the content 
             textEditor.save().then(data => {
                 if(data.blocks.length) {
                     setBlog({...blog , content : data});

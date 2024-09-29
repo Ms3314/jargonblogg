@@ -29,6 +29,7 @@ const PublishForm = () => {
         setBlog({...blog , title : input.value})
 
     }
+    // the des is diff and the content is diffeent , the des is what we add in the publish page , the content is what we add in the blog page 
     const handleBlogDesChange = (e) => {
         let des = e.target ;
         setBlog({...blog , des : des.value}) 
@@ -49,8 +50,10 @@ const PublishForm = () => {
             e.target.value = ""
         }
     }
+    // this function is to publish the blog 
     const publishBlog = (e) => {
         if (e.target.className.includes("diable")){
+            // if the button has a disable class do nothing
             return 
         } 
         if(!title.length) {
@@ -62,21 +65,27 @@ const PublishForm = () => {
         if (!tags.length) {
             return toast.error("Enter atleast 1 tag t0 help us rank your blog")
         }  
+        // gives a toast message of loading 
         let loadingToast = toast.loading("Publishing....") 
+        // adding a disable class to it to avoid multiple submissions 
         e.target.classList.add('disable') 
+        // creating an object that will be passed to the database 
         let blogObj = {
             title , banner , des , content , tags , draft : false 
         }     
+
         axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/create-blog" , blogObj , {
+            // this is the header to be provided to check if the user is authenticated or not , because this /create-blog is a protected route 
             headers : {
                 'Authorization' :  `Bearer ${access_token}`
             }
         } )
         .then(()=> {
+            // as the data is send we want to remove the disable so that the user can submit the blog if he wants again
             e.target.classList.remove('disable')
             toast.dismiss(loadingToast)
             toast.success("Published :> \_")
-
+            // to showcase the publish toast thus in 500 milliseconds we then navigate to / route 
             setTimeout(()=> {
                 navigate("/")
             },500);
