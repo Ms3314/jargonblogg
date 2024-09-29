@@ -18,7 +18,7 @@ const BlogEditor = () => {
     useEffect(()=> {
         setTextEditor(new EditorJS({
             holderId : "textEditor",
-            data : '',
+            data : content ,
             tools : tools,
             placeholder : "lets write an awesome story"
         }))
@@ -58,26 +58,26 @@ const BlogEditor = () => {
         img.src = defaultBanner
     }
     const handlePublishEvent = (e) => {
-        if (!banner.length) {
-            return toast.error("Upload a blog banner to publish it")
-        }
-        if (!title.length) {
-            return toast.error("Write blog title for the blog")
-        }
-        if (textEditor.isReady) {
+        // if (!banner.length) {
+        //     return toast.error("Upload a blog banner to publish it")
+        // }
+        // if (!title.length) {
+        //     return toast.error("Write blog title for the blog")
+        // }
+        // if (textEditor.isReady) {
             textEditor.save().then(data => {
-                if(data.blocks.length) {
+                // if(data.blocks.length) {
                     setBlog({...blog , content : data});
                     setEditorState("publish")
-                } else {
-                    return toast.error("Write something in the blog to publish it ")
-                }
+                // } else {
+                //     return toast.error("Write something in the blog to publish it ")
+                // }
             })
             .catch((err) => {
                 console.log(err)
             })
         }
-    }
+    // }
     return (
         <>
         <nav className="navbar">
@@ -120,6 +120,7 @@ const BlogEditor = () => {
                         </label>
                     </div>
                     <textarea 
+                    defaultValue={title}
                     placeholder="Blog Title"
                     className="text-4xl font-medium w-full h-20 resize-none mt-10 leading-tight placeholder:opacity-40 placeholder:pl-10"
                     onKeyDown={handleTitleKeyDown}
