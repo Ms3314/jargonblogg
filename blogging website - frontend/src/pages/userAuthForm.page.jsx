@@ -18,7 +18,9 @@ function UserAuthForm({ type }) {
 
     let {userAuth : {access_token} , setUserAuth } = useContext(UserContext);
     // console.log(useContext(UserContext))
-    console.log(access_token)
+    // console.log(access_token)
+
+    
     // Async/Await for better error handling
 
     const handleGoogleAuth = (e) => {
