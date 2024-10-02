@@ -1,0 +1,23 @@
+#  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZjkyMGFjODMxNzYwYTI3MjM3MzAzOCIsImlhdCI6MTcyNzYwMjg2MH0.16ub-mDItePrtxX8AeSBGzuq2k8tWjwVjijt6YFM__I
+# POST http://localhost:3000/signup 
+# Content-Type : application/json
+
+# {
+#     "fullname" : "john" ,
+#     "email" : "john2@gmail.com" , 
+#     "password" : "John@123"
+# }
+
+POST http://localhost:3000/create-blog
+Content-Type: application/json
+Authorization:  Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZjkyMGFjODMxNzYwYTI3MjM3MzAzOCIsImlhdCI6MTcyNzYwMjg2MH0.16ub-mDItePrtxX8AeSBGzuq2k8tWjwVjijt6YFM__I
+
+{
+    "title" : "test title @idk if this will &&^%%% work " , 
+    "banner" : "https://exampe.com/hlleoejf",
+    "des" : "this is a short des lets see if this will work or not ",
+    "content" : {
+        "blocks" : [1 , 2 ]
+    },
+    "tags" : ["tag1" , "tag2"]
+}

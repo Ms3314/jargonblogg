@@ -1,3 +1,4 @@
+// basic default imports 
 import express from "express"
 import mongoose from "mongoose";
 import 'dotenv/config'
@@ -5,12 +6,17 @@ import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import { nanoid } from "nanoid";
 import cors from "cors"
+
 // schema imported here
 import Blog from "./Schema/Blog.js"
 import User from "./Schema/User.js"
+
+// firebase authenitcation imports 
 import admin from "firebase-admin";
 import serviceAccountKey from './jargon-blog-firebase-adminsdk-j8izb-43dd6bbe561.json' assert {type : "json" }
 import {getAuth} from "firebase-admin/auth"
+
+// aws imports 
 import aws from "aws-sdk";
 
 const app = express()
@@ -214,6 +220,26 @@ app.post("/google-auth" , async (req , res) => {
         return res.status(500).json({"error" : err.message})
     })
 })
+
+
+// this root is to display the data without any authentication 
+
+app.get("/latest-blogs" , (req , res) => {
+    let maxLimit = 5;
+
+    Blog.find({draft : false })
+    .populate("author" , "personal_info.username personal_info.fullname personal_info.profile_img -_id")
+    .sort({"publishedAt" : -1 })
+    .select("blog_id title des banner activity tags publishedAt -_id")
+    .limit(maxLimit)
+    .then(blogs => {
+        return res.status(200).json({ blogs : blogs})
+    })
+    .catch(err => {
+        return res.status(500).json({error : err.message })
+    })
+})
+
 
 app.post("/create-blog" , verifyJWT ,(req , res) => {
     let authodId = req.user

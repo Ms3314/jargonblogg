@@ -1,7 +1,7 @@
 import { useScroll } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
-const InPageNavigation = ({ routes , defaultActiveIndx = 0 }) => {
+const InPageNavigation = ({ routes , defaultActiveIndx = 0 , defaultHidden , children}) => {
     let activeTabLineRef = useRef();
     let activeTabRef = useRef()
     let [inPageNavIndex , setInPageNavIndex] = useState(defaultActiveIndx);
@@ -22,7 +22,8 @@ const InPageNavigation = ({ routes , defaultActiveIndx = 0 }) => {
                         {
                             routes.map((route , i ) => {
                                 return (
-                                    <button key={i} className={"p-4 px-5 capitalize " + (inPageNavIndex == i ? "text-black" : "text-dark-grey" )}
+                                    <button key={i} className={"p-4 px-5 capitalize " + (inPageNavIndex == i ? "text-black" : "text-dark-grey" ) + (defaultHidden.includes(route) ? " md:hidden" : "") }
+                                    // so in the above code we pass an array about hiddenDefualt wala so if the array has the data of the curent route then this route will be hidden in the case of medium and bigger screens 
                                     ref={ i == defaultActiveIndx ? activeTabRef : null }
                                     onClick={(e)=>{
                                         changePageState(e.target , i)
@@ -35,6 +36,9 @@ const InPageNavigation = ({ routes , defaultActiveIndx = 0 }) => {
                         }
                         <hr ref={activeTabLineRef} className="absolute bottom-0 duration-300 "/>
             </div>
+            {/* isArray is methood used to check if the given item is an array or not   */}
+    {/* ao basically when we pass the children normally it does not act as an array but if we pass more than one children it will act as an array to becomes in a form of Array*/}
+                {Array.isArray(children) && children[inPageNavIndex] }
         </>
     )
 }
