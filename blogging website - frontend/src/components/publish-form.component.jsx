@@ -134,13 +134,13 @@ const PublishForm = () => {
                 
                     <p className="text-dark-grey mb-2 mt-9">Topics - (helps in searching and ranking your blog post )</p>
                     
-                    <div className="relative postion input-box pl-2 py-2 pb-4 ">
+                    <div className="relative  postion input-box pl-2 py-2 pb-4 ">
                         <input type="text" placeholder="Topics"
                         onKeyDown={handleKeyDown}
                         className="focus:bg-white sticky pl-4 mb-3 input-box bg-white top-0 left-0" />
                         {
                             tags.map((tag , i) => {
-                                return <Tag tag={tag} key={i} tagIndex={i}/>
+                                return <Tag  tag={tag} key={i} tagIndex={i}/>
                             })
                         }
                     </div>
