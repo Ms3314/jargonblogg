@@ -12,7 +12,7 @@ const HomePage = () => {
     let [blog , setBlog] = useState(null)
     let [trendingBlog , setTrendingBlog] = useState(null)
     let [pageState , setPageState] = useState("home")
-    let categories = ["programming" , 'lorem' , "chicken" , "food" , "design" , "tech" , "jijaji" , "CSI" , "marketting" ]
+    let categories = ["programming" , 'lorem' , "chicken" , "food" , "design" , "tech" , "jijaji" , "csi" , "marketting" ]
 
     const fetchLatestBlogs = () => {
         axios.get(import.meta.env.VITE_SERVER_DOMAIN + '/latest-blogs')
@@ -21,6 +21,16 @@ const HomePage = () => {
         })
         .catch(err => {
             console.log(err);
+        })
+    }
+
+    const fetchBlogByCategory = () => {
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN + '/search-blogs' , {tag : pageState})
+        .then(({ data })  => {
+            setBlog(data.blogs)
+        })
+        .catch(err => {
+            console.log(err.message);
         })
     }
 
@@ -43,6 +53,8 @@ const HomePage = () => {
             setPageState("home");
             return ; 
         }
+        console.log(category);
+        console.log("ye wala state exist karra", pageState)
         setPageState(category)
     }   
 
@@ -50,8 +62,12 @@ const HomePage = () => {
         activeTabRef.current.click()
 
         if(pageState == "home") {
-        fetchLatestBlogs();
+            fetchLatestBlogs();
+        } else {
+            fetchBlogByCategory()
         }
+
+
         if(!trendingBlog) {
         fetchTrendingBlogs()
         }
