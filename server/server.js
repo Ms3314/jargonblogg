@@ -22,9 +22,24 @@ import aws from "aws-sdk";
 const app = express()
 let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
 let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
-let PORT = process.env.PORT || 3000;
-const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_CREDENTIALS);
- 
+let PORT = process.env.PORT || 3000; 
+// logic for firebase 
+
+// creating an object that have all the content of serviceAcc
+
+const serviceAccount = {
+  "type": process.env.FIREBASE_TYPE,
+  "project_id": process.env.FIREBASE_ID ,
+  "private_key_id": process.env.FIREBASE_3,
+  "private_key": process.env.FIREBASE_4 , 
+  "client_email": process.env.FIREBASE_5,
+  "client_id": process.env.FIREBASE_6,
+  "auth_uri": process.env.FIREBASE_7,
+  "token_uri": process.env.FIREBASE_8,
+  "auth_provider_x509_cert_url": process.env.FIREBASE_9,
+  "client_x509_cert_url": process.env.FIREBASE_10,
+  "universe_domain": process.env.FIREBASE_11
+}
 
 admin.initializeApp({
     credential : admin.credential.cert(serviceAccount)
