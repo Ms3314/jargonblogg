@@ -45,10 +45,13 @@ admin.initializeApp({
     credential : admin.credential.cert(serviceAccount)
 })
 
-app.use(cors({
-    origin: process.env.FRONTEND_DOMAIN,
-    credentials: true
-}));
+// app.use(cors({
+//     origin: process.env.FRONTEND_DOMAIN,
+//     credentials: true
+// }));
+
+// Use cors middleware
+app.use(cors());
 
 mongoose.connect(process.env.DB_LOCATION)
 .then(() => {
