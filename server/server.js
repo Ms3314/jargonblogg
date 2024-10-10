@@ -1,8 +1,8 @@
 // basic default imports 
 import express from "express"
 import mongoose from "mongoose";
-import 'dotenv/config'
-import bcrypt from "bcrypt"
+import 'dotenv/config';
+import bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken"
 import { nanoid } from "nanoid";
 import cors from "cors"
