@@ -45,10 +45,17 @@ admin.initializeApp({
     credential : admin.credential.cert(serviceAccount)
 })
 
-app.use(cors({
-    origin: process.env.FRONTEND_DOMAIN,
-    withCredentials: true
-}));
+const corsOptions = {
+    origin: "https://blog-editor-frontend.onrender.com", // Allow your specific frontend domain
+    credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Specify allowed methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers
+  };
+  
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Handle preflight requests
+
+
 
 // Use cors middleware
 // app.use(cors());
