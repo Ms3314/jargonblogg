@@ -47,7 +47,7 @@ admin.initializeApp({
 
 app.use(cors({
     origin: process.env.FRONTEND_DOMAIN,
-    credentials: true
+    withCredentials: true
 }));
 
 // Use cors middleware
