@@ -122,7 +122,7 @@ const HomePage = () => {
 
                 {/* filters and trending blogs */}
                 {/* max-md means from smaller screens to medium screens  */}
-                            <div className="min-w-[40%] lg:min-[400px] max-w-min border-2 border-grey pl-8 pt-10 mt-[-20px] max-md:hidden">
+                            <div className="min-w-[40%] lg:min-[400px] max-w-min border-2 pr-[120px] border-grey pl-8 pt-10 mt-[-20px] max-md:hidden">
                                 <div className="flex flex-col gap-10">
                                 {/* this is the main div in which we have trensing and the isk those buttons  */}
                                 
