@@ -4,3 +4,4 @@ tailwind.config.js
 vite.config.js
 regex.txt
 .json
+node_modules
