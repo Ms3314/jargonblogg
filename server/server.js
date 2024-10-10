@@ -46,7 +46,8 @@ admin.initializeApp({
 })
 
 const corsOptions = {
-    origin: "https://blog-editor-frontend.onrender.com", // Allow your specific frontend domain
+    // origin: "https://blog-editor-frontend.onrender.com", // Allow your specific frontend domain
+    origin : `${process.env.CLIENT_URL}`,
     credentials: true, // Allow credentials (cookies, authorization headers, etc.)
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Specify allowed methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers
@@ -54,8 +55,6 @@ const corsOptions = {
   
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions)); // Handle preflight requests
-
-
 
 // Use cors middleware
 // app.use(cors());
@@ -251,13 +250,15 @@ app.post("/google-auth" , async (req , res) => {
 
 // this root is to display the data without any authentication 
 
-app.get("/latest-blogs" , (req , res) => {
+app.post("/latest-blogs" , (req , res) => {
+    let { page } = req.body
     let maxLimit = 5;
 
     Blog.find({draft : false })
     .populate("author" , "personal_info.username personal_info.fullname personal_info.profile_img -_id")
     .sort({"publishedAt" : -1 })
     .select("blog_id title des banner activity tags publishedAt -_id")
+    .skip((page - 1)*maxLimit) //SO THIS FUNCTION SKIPS THE PAGES ... SO INITIALLY MY PAGE IS 1 , SO (1 - 1 ) * 5 THUS IT DOESNT SKIP ANYTHING SO U UNDERSTAND IT RIGHT 
     .limit(maxLimit)
     .then(blogs => {
         return res.status(200).json({ blogs : blogs})
@@ -266,6 +267,17 @@ app.get("/latest-blogs" , (req , res) => {
         return res.status(500).json({error : err.message })
     })
 })
+
+app.post("/all-latest-blogs-count" ,  (req , res) => {
+    Blog.countDocuments({draft : false})
+    .then(count => {
+        return res.status(200).json({ totalDocs : count })
+    })
+    .catch(err => {
+        return res.status(500).json({error : err.message })
+    })
+} )
+
 
 app.get("/trending-blog" , (req , res) => {
     Blog.find({draft : false})

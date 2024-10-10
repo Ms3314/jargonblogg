@@ -7,7 +7,8 @@ import MinimalBlogPost from "../components/nobanner-blog-post.component"
 import {useEffect , useState} from "react"
 import  {activeTabRef }  from "../components/inpage-navigation.component";
 import NoDataMessage from "../components/nodata.component";
-
+import { filterPaginationData } from "../common/filter-pagination-data";
+import LoadMoreDataBtn from "../components/load-more.component";
 
 const HomePage = () => {
     let [blog , setBlog] = useState(null)
@@ -15,20 +16,34 @@ const HomePage = () => {
     let [pageState , setPageState] = useState("home")
     let categories = ["programming" , 'Masters' , "crypto" , "design" , "tech" , "AI" , "gaming" , "csi" , "marketting" ]
 
-    const fetchLatestBlogs = () => {
-        axios.get(import.meta.env.VITE_SERVER_DOMAIN + '/latest-blogs')
-        .then(({ data })  => {
-            setBlog(data.blogs)
+    const fetchLatestBlogs = ({ page = 1 }) => {
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN + '/latest-blogs' , {page : page})
+        .then(async ({ data})  => {
+            console.log(data.blogs)
+
+            let formatedData = await filterPaginationData({
+                state : blog , 
+                data : data.blogs , 
+                page ,
+                countRoute : "/all-latest-blogs-count"
+            }) 
+            setBlog(formatedData)
         })
         .catch(err => {
             console.log(err);
         })
     }
 
-    const fetchBlogByCategory = () => {
-        axios.post(import.meta.env.VITE_SERVER_DOMAIN + '/search-blogs' , {tag : pageState})
-        .then(({ data })  => {
-            setBlog(data.blogs)
+    const fetchBlogByCategory = ({page = 1}) => {
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN + '/search-blogs' , {tag : pageState , page})
+        .then( async ({ data })  => {
+            let formatedData = await filterPaginationData({
+                state : blog , 
+                data : data.blogs , 
+                page ,
+                countRoute : "/search-blogs-count"
+            }) 
+            setBlog(formatedData)
         })
         .catch(err => {
             console.log(err.message);
@@ -63,7 +78,7 @@ const HomePage = () => {
         activeTabRef.current.click()
 
         if(pageState == "home") {
-            fetchLatestBlogs();
+            fetchLatestBlogs({page : 1});
         } else {
             fetchBlogByCategory()
         }
@@ -87,16 +102,19 @@ const HomePage = () => {
                             {
                                 blog == null ? <Loader /> : 
                                 (
-                                blog.length ? blog.map((blog , i) => {
-                                    return <AnimationWraper transition={{duration : 1 , delay : i*.1}} key={i}>
-                                        <BlogPostCard content={blog} author={blog.author.personal_info}/>
+                                blog.results.length ? blog.results.map((blog , i) => {
+                                    return (
+                                    <AnimationWraper transition={{duration : 1 , delay : i*.1}} key={i}>
+                                          <BlogPostCard content={blog} author={blog.author.personal_info}/>
                                     </AnimationWraper>
+                                    )
                                 }) : 
                                 <NoDataMessage
                                 message="No Blogs published"
                                 />
                                 )
                             }
+                            <LoadMoreDataBtn state={blog} fetchDataFn={fetchLatestBlogs} />
                         </>                
 
                         <>
@@ -122,15 +140,15 @@ const HomePage = () => {
 
                 {/* filters and trending blogs */}
                 {/* max-md means from smaller screens to medium screens  */}
-                            <div className="min-w-[40%] lg:min-[400px] max-w-min border-2 pr-[120px] border-grey pl-8 pt-10 mt-[-20px] max-md:hidden">
-                                <div className="flex flex-col gap-10">
+                            <div className="min-w-[40%] lg:min-[400px] max-w-min border-2 mr-[-150px] ml-[50px] pl-10 border-grey pt-10 mt-[-20px] max-md:hidden">
+                                <div className="flex flex-col gap-10 pr-56">
                                 {/* this is the main div in which we have trensing and the isk those buttons  */}
                                 
                                 {/* here we have those category buttons */}
                                 <div>
                                     <h1 className="font-medium text-xl mb-8 ">Stories from all intrests</h1>
                                     
-                                    <div className="flex gap-3 flex-wrap ">
+                                    <div className="flex gap-3 w-[400px] flex-wrap ">
                                         {
                                             categories.map((category , i)=> {
                                                 return <button onClick={loadBlogByCategory} className={'tag ' + ( pageState == category ? "bg-black text-white" : "") } key={i} >{category}</button>
