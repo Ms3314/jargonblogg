@@ -13,7 +13,7 @@ import User from "./Schema/User.js"
 
 // firebase authenitcation imports 
 import admin from "firebase-admin";
-import serviceAccountKey from './jargon-blog-firebase-adminsdk-j8izb-43dd6bbe561.json' assert {type : "json" }
+// import serviceAccountKey from './jargon-blog-firebase-adminsdk-j8izb-43dd6bbe561.json' assert {type : "json" }
 import {getAuth} from "firebase-admin/auth"
 
 // aws imports 
@@ -23,9 +23,11 @@ const app = express()
 let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
 let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
 let PORT = process.env.PORT || 3000;
+const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_CREDENTIALS);
+ 
 
 admin.initializeApp({
-    credential : admin.credential.cert(serviceAccountKey)
+    credential : admin.credential.cert(serviceAccount)
 })
 
 app.use(cors({
