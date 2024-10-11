@@ -47,7 +47,7 @@ admin.initializeApp({
 
 const corsOptions = {
     // origin: "https://blog-editor-frontend.onrender.com", // Allow your specific frontend domain
-    origin : `${process.env.CLIENT_URL}`,
+    origin : `${process.env.CLIENT_URL}` ,
     credentials: true, // Allow credentials (cookies, authorization headers, etc.)
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Specify allowed methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers
