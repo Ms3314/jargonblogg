@@ -6,7 +6,7 @@ const LoadMoreDataBtn = ({state , fetchDataFn}) => {
         // on fetching this data the only thing we do it adding more data to the existing data ... check the demo to undertand better 
         onClick={()=> fetchDataFn({page : state.page+1})}
         className="text-dark-grey p-2 px-3 hover:bg-grey/30 rounded-md flex items-center gap-2"
-        >
+        >   
             Load More
         </button>
     )

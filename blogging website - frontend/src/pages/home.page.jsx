@@ -14,10 +14,10 @@ const HomePage = () => {
     let [blog , setBlog] = useState(null)
     let [trendingBlog , setTrendingBlog] = useState(null)
     let [pageState , setPageState] = useState("home")
-    let categories = ["programming" , 'Masters' , "crypto" , "design" , "tech" , "AI" , "gaming" , "csi" , "marketting" ]
+    let categories = ["programming"  , "crypto" , "design" , "tech"  , "gaming" , "csi" , "marketting" ]
 
     const fetchLatestBlogs = ({ page = 1 }) => {
-        axios.post(import.meta.env.VITE_SERVER_DOMAIN + '/latest-blogs' , {page : page})
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN + '/latest-blogs' , {page})
         .then(async ({ data})  => {
             console.log(data.blogs)
 
@@ -41,7 +41,8 @@ const HomePage = () => {
                 state : blog , 
                 data : data.blogs , 
                 page ,
-                countRoute : "/search-blogs-count"
+                countRoute : "/search-blogs-count",
+                data_to_send : {tag : pageState}
             }) 
             setBlog(formatedData)
         })
@@ -80,7 +81,7 @@ const HomePage = () => {
         if(pageState == "home") {
             fetchLatestBlogs({page : 1});
         } else {
-            fetchBlogByCategory()
+            fetchBlogByCategory({page : 1})
         }
 
 
@@ -114,8 +115,9 @@ const HomePage = () => {
                                 />
                                 )
                             }
+                            <p>ye kyu nai ara </p>
                             <LoadMoreDataBtn state={blog} fetchDataFn={fetchLatestBlogs} />
-                        </>                
+                        </>                 
 
                         <>
                             {
