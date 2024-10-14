@@ -252,14 +252,13 @@ app.post("/google-auth" , async (req , res) => {
 
 app.post("/latest-blogs" , (req , res) => {
     let { page } = req.body
-    let maxLimit = 2;
+    let maxLimit = 5;
 
     Blog.find({draft : false })
     .populate("author" , "personal_info.username personal_info.fullname personal_info.profile_img -_id")
     .sort({"publishedAt" : -1 })
     .select("blog_id title des banner activity tags publishedAt -_id")
     .skip((page - 1)*maxLimit) //SO THIS FUNCTION SKIPS THE PAGES ... SO INITIALLY MY PAGE IS 1 , SO (1 - 1 ) * 5 THUS IT DOESNT SKIP ANYTHING SO U UNDERSTAND IT RIGHT 
-    .skip((page -1)*maxLimit)
     .limit(maxLimit)
     .then(blogs => {
         return res.status(200).json({ blogs : blogs})
@@ -301,12 +300,13 @@ app.post("/search-blogs" , (req , res) => {
     let { tag , page } = req.body;
 
     let findQuery = {tags : tag , draft:false };
-    let maxLimit = 5;
+    let maxLimit = 2;
 
     Blog.find(findQuery)
     .populate("author" , "personal_info.username personal_info.fullname personal_info.profile_img -_id")
     .sort({"publishedAt" : -1 })
     .select("blog_id title des banner activity tags publishedAt -_id")
+    .skip((page - 1)*maxLimit)
     .limit(maxLimit)
     .then(blogs => {
         return res.status(200).json({ blogs : blogs})

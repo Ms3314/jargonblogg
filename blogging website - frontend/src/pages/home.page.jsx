@@ -115,8 +115,8 @@ const HomePage = () => {
                                 />
                                 )
                             }
-                            <p>ye kyu nai ara </p>
-                            <LoadMoreDataBtn state={blog} fetchDataFn={fetchLatestBlogs} />
+
+                            <LoadMoreDataBtn state={blog} fetchDataFn={(pageState=="home" ? fetchLatestBlogs : fetchBlogByCategory)} />
                         </>                 
 
                         <>
