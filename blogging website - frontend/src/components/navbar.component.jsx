@@ -52,7 +52,7 @@ const Navbar = () => {
             </div>
             <div className='flex items-center gap-3 md:gap-6 ml-auto'>
                 <button onClick={handleOpen} className='md:hidden bg-grey w-12 h-12 flex rounded-full items-center justify-center'>
-                <i class="fi fi-br-search-heart text-dark-grey"></i>
+                <i className="fi fi-br-search-heart text-dark-grey"></i>
                 </button>
 
                 <Link to="editor" className='hidden md:flex gap-2 link'>
