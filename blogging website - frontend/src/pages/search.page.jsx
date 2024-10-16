@@ -8,11 +8,13 @@ import LoadMoreDataBtn from "../components/load-more.component"
 import { filterPaginationData } from "../common/filter-pagination-data"
 import Loader from "../components/loader.component"
 import axios from "axios"
-
+import UserCard from "../components/usercard.component"
 
 function SearchPage() {
   let { query } = useParams();
   let [blog, setBlog] = useState(null);
+  let [users , setUsers] = useState(null);
+
 
   const searchBlog = ({ page = 1, create_new_arr = false }) => {
       axios
@@ -33,26 +35,62 @@ function SearchPage() {
           });
   };
 
+  const fetchUsers = () => {
+    axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/search-users" , { query })
+    .then(({data : {users}})=>{
+        console.log(users);
+        setUsers(users);
+    })
+    .catch((err)=>{
+      console.log(err);
+    })
+  }
+
+  const UserCardWrapper = () => {
+    return (
+        <>
+            {
+                 users == null ? <Loader/> :
+                    users.length ? 
+                        users.map((user,i)=>{
+                            return (
+                                <AnimationWraper key={i} transition={{duration : 1 , delay : i*0.08}}>
+                                    <UserCard user={user}/>
+                                </AnimationWraper>
+                            )
+                        })
+                    :
+                    <NoDataMessage message="No user Found" />
+            }
+        </>
+    )
+
+
+    }
+
   useEffect(() => {
       resetState();
       searchBlog({ page: 1, create_new_arr: true });
+      fetchUsers()
   }, [query]);
 
   const resetState = () => {
       setBlog(null);
+      setUsers(null);
   };
 
   return (
       <div>
-          <section className="h-cover justify-center gap-10">
+          <section className="flex flex-row h-cover justify-center gap-10">
               <div className="w-full">
                   <InPageNavigation
                       routes={[`Search Results from "${query}"`, "Accounts Matched"]}
                       defaultHidden={["Accounts Matched"]}
                   >
+                    <>
                     {/* bhai ye wala inPageNav bhot dimag kharan fn hai , kaise kaam karta ki magar isko array hona hai , eill uodate later if i understood this , iska maslam hai ki ak item ku ich render karta zada samjh nai ara bhul gaya will return to it later  */}
-                      {[
-                          blog == null ? (
+                      {
+                        blog == null ? (
                               <Loader />
                           ) : blog.results && blog.results.length ? (
                               blog.results.map((blog, i) => (
@@ -62,14 +100,18 @@ function SearchPage() {
                               ))
                           ) : (
                               <NoDataMessage message="No Blogs published" />
-                          ),
-                          <div> {/* Placeholder for the second tab (Accounts Matched) */}
-                              {/* Content for "Accounts Matched" tab can be added here */}
-                              <NoDataMessage message="No Accounts matched" />
-                          </div>
-                      ]}
+                          ) 
+                        }  
+                        <LoadMoreDataBtn state={blog} fetchDataFn={searchBlog} />
+                    </>
+                    <UserCardWrapper/>
                   </InPageNavigation>
-                  <LoadMoreDataBtn state={blog} fetchDataFn={searchBlog} />
+              </div>
+
+              {/* the right side panel for the users finding */}
+              <div className="border-l-2  min-w-[40%] lg:min-w-[350px] max-w-min border-1 border-grey pl-8 pt-3 max-md:hidden " > 
+                        <h1 className="font-medium text-xl mb-10" >User Related to Search <i className="fi mt-1 fi-rs-user"></i></h1>
+                        <UserCardWrapper />
               </div>
           </section>
       </div>
