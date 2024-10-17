@@ -297,13 +297,15 @@ app.get("/trending-blog" , (req , res) => {
 
 app.post("/search-blogs" , (req , res) => {
 
-    let { tag , page , query} = req.body;
+    let { tag , page , author , query} = req.body;
     let findQuery;
 
     if (tag) {
         findQuery = {tags : tag , draft:false };
     } else if (query) {
         findQuery = {draft : false , title: new RegExp(query , 'i')}
+    } else if (author) {
+        findQuery = {draft : false , author}
     }
 
     let maxLimit = 2;
@@ -324,13 +326,15 @@ app.post("/search-blogs" , (req , res) => {
 } )
 
 app.post("/search-blogs-count" , (req , res) => {
-    let {tag , query} = req.body
+    let {tag , query , author} = req.body
     let findQuery;
-
+    console.log("author serve ku aya ",author)
     if (tag) {
         findQuery = {tags : tag , draft:false };
     } else if (query) {
         findQuery = {draft : false , title: new RegExp(query , 'i')}
+    } else if (author) {
+        findQuery = {draft : false , author}
     }
 
     Blog.countDocuments(findQuery)
