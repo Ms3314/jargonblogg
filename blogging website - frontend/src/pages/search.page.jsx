@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
 import InPageNavigation from "../components/inpage-navigation.component"
 import { useEffect, useState } from "react"
 import AnimationWraper from "../common/page-animation"
@@ -38,7 +38,6 @@ function SearchPage() {
   const fetchUsers = () => {
     axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/search-users" , { query })
     .then(({data : {users}})=>{
-        console.log(users);
         setUsers(users);
     })
     .catch((err)=>{
@@ -54,9 +53,11 @@ function SearchPage() {
                     users.length ? 
                         users.map((user,i)=>{
                             return (
+                                <Link to={`/user/${user.username}`} key={i}>
                                 <AnimationWraper key={i} transition={{duration : 1 , delay : i*0.08}}>
                                     <UserCard user={user}/>
                                 </AnimationWraper>
+                                </Link>
                             )
                         })
                     :
