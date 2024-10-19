@@ -419,6 +419,29 @@ app.post("/create-blog" , verifyJWT ,(req , res) => {
     })
 })
 
+app.post("/get-blog" , (req , res) => {
+    let {blog_id} = req.body 
+    let incremental = 1; 
+    // yaha humlog blogkitne log pade dekhre 
+    Blog.findOneAndUpdate({ blog_id }, {$inc : {"activity.total_reads" : incremental }}  )
+    // the populate usually works for the Schema.Types.ObjectId wala thingy 
+    .populate("author" , "personal_info.fullname personal_info.username personal_info.profile_img")
+    .select("title des content banner activity publishedAt blog_id tags")
+    .then(blog => {
+        User.findOneAndUpdate({"personal_info.username" : blog.author.personal_info.
+        // yaha humlog user kitne blog pada dekhte samjhe 
+        username} , {$inc : {"account_info.total_reads" : incremental }})
+        .catch(err => {
+            res.status(500).json({error : err.message})
+        })
+        return res.status(200).json({ blog })
+    })
+    .catch(err => {
+        return res.status(500).json({error : err.message})
+    })
+})
+
+
 app.listen(PORT , () => {
     console.log("Server is running on port " + PORT)
 })

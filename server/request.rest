@@ -8,12 +8,12 @@
 #     "password" : "John@123"
 # }
 
-POST  http://localhost:3000/get-profile
+POST  http://localhost:3000/get-blog 
 Content-Type: application/json
 Authorization:  Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZjkyMGFjODMxNzYwYTI3MjM3MzAzOCIsImlhdCI6MTcyNzYwMjg2MH0.16ub-mDItePrtxX8AeSBGzuq2k8tWjwVjijt6YFM__I
 
 {
-    "username" : "hsamiuddin405"
+    "blog_id" : "why-this-college-is-dope-lolJjr6xUvWNFEFojnsGh6nj"
 }
 
 # {
