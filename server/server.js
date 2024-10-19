@@ -428,8 +428,9 @@ app.post("/get-blog" , (req , res) => {
     .populate("author" , "personal_info.fullname personal_info.username personal_info.profile_img")
     .select("title des content banner activity publishedAt blog_id tags")
     .then(blog => {
-        User.findOneAndUpdate({"personal_info.username" : blog.author.personal_info.
-        // yaha humlog user kitne blog pada dekhte samjhe 
+        // ye mtlb humlog pick karre the author of this specific blog 
+        // we increment on the blog as well as for the total reads for the user 
+        User.findOneAndUpdate({"personal_info.username" : blog.author.personal_info. 
         username} , {$inc : {"account_info.total_reads" : incremental }})
         .catch(err => {
             res.status(500).json({error : err.message})
