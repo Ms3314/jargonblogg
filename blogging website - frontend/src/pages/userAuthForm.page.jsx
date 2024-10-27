@@ -32,7 +32,7 @@ function UserAuthForm({ type }) {
             }
             userAuthThroughServer(serverRoute , formData)
         }).catch(error => {
-            toast.error("trouble logging with google ")
+            toast.error("trouble logging with google")
             return console.log(error)
         })
     }

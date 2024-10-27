@@ -297,18 +297,18 @@ app.get("/trending-blog" , (req , res) => {
 
 app.post("/search-blogs" , (req , res) => {
 
-    let { tag , page , author , query} = req.body;
+    let { tag , page , author , query , limit , eliminate_blog} = req.body;
     let findQuery;
 
     if (tag) {
-        findQuery = {tags : tag , draft:false };
+        findQuery = {tags : tag , draft:false , blog_id : {$ne : eliminate_blog} };
     } else if (query) {
         findQuery = {draft : false , title: new RegExp(query , 'i')}
     } else if (author) {
         findQuery = {draft : false , author}
     }
 
-    let maxLimit = 2;
+    let maxLimit = limit ? limit : 2;
 
     Blog.find(findQuery)
     .populate("author" , "personal_info.username personal_info.fullname personal_info.profile_img -_id")
